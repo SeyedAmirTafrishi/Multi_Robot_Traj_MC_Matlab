@@ -4,10 +4,28 @@
 %what if a robot has role 
 % Mrobs =[Mrob(1);Mrob2;....] 
 % Continues time (x,y) -> R^2
+% Initial States
+%% Main Loop of Simulation
+T1=0;
+et=.01; %step time
+while (1)
 
-%% Functions  in each robot
+    %% Re-Schedule (???)
+
+    %% Robot loop 
+    for robot=1:1:n % For each robot
+    %% Control Inputs and Re-Planning (PoF) In CR out U (Note: for each robot! but CR has all and changes every iteration)
+    %Quadratic Path  Plannig) 
+    %% Solve the robot motions SRM
+    [T,Q] = ode45(@(t,q) SRM(t,q,CR,Alpha_Ob,PH,U),[T1,T1+et],qc,options); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ODE Solver MOHEMs
+    % Update the matrix of the robot (i-th) NCR
+    end
+
+%% Plot the robot Motion 
 
 
+T1=T1+et;    
+end
 %% Priority Planer Function
 % Which robot will be the main guy for "path planner function", Algorithm of 
 % fetch sides summation and finding the highest priority robot by 
@@ -19,13 +37,21 @@
 % In: the states (variables of space)
 % Out: Trajectory L
 
+
 %% Solve the kinematics in time t 
 % states of each robot, new updates to priority tables and new robots? bla
 % bla
+function dq = SRM(t,q,CR,Alpha_Ob,PH,U)  %Solver Robot Motion for each robot
+U(1)=v;
+U(2)=w;
+A=[cos(phi);sin(phi);0];
+B=[0;0;1];
+dq=A*v+B*w;
+end
 
-%% 
+%% Re-Path Planner
 % Alpha = [x y R]
-function [CR U] = PoF(X,dX,CR,Alpha_Ob,PH, t) % For a single robot (What robot gonna do)
+function [CR U] = PoF(X,dX,CR,Alpha_Ob,PH, t) % For a single robot (What robot gonna do) Path Planner Function 
 %X Position, dX velocity, P (priority), Des (destination), t (time)
 % CR:
 % Vectorial matrix sof high priority previously done robot
@@ -34,7 +60,7 @@ function [CR U] = PoF(X,dX,CR,Alpha_Ob,PH, t) % For a single robot (What robot g
 % CR = [a0 a1 a2 .... an P;% First robot 
 % [a0 a1 a2 .... an Alpha_Ro(1x3) Pri(1xn) U(1x2)] % Second robot 
 %...
-% Priority (P = [ current priority failure goal point]). 
+% Priority (P = [ (current priority) (failure) (robot's goal location)]). 
 % Alpha_Ro=  [x y R]     % Robot area
 % Alpha_Ob = [x y R]     %OBstacles
 % PH = Prediction Horizen (time unit) 4 sec.... 
@@ -59,6 +85,9 @@ function [CR U] = PoF(X,dX,CR,Alpha_Ob,PH, t) % For a single robot (What robot g
 
 %----------------------------------------------------
 end
+
+%% Re-scheduling Function 
+%() = function ()....
 
 %function PoF(X,dX,CR,Alpha_Ob,PH, t) % For a single robot (How the CR should be arrange)
 
